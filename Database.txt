@@ -1,0 +1,99 @@
+Q1.Check missing values in important columns
+	
+	SELECT SUM(CASE WHEN director is NULL or director = '' THEN 1 ELSE 0 END) as missing_director,
+SUM(CASE WHEN country is NULL or country = '' THEN 1 ELSE 0 END) as missing_country,
+SUM(CASE WHEN rating is NULL or rating = '' THEN 1 ELSE 0 END) as missing_rating,
+SUM(CASE WHEN duration is NULL or duration = '' THEN 1 ELSE 0 END) as missing_duration 
+from netflix_data
+
+		
+Q2 Find duplicate titles
+
+	SELECT title ,count(*) as duplicate_count from netflix_data
+group by title having count(*)>1
+	
+
+Q3 Total content available on Netflix
+ 	
+select count(*) as total_show from netflix_data
+
+
+Q4 Movies / TV Shows
+	select type, count(*) as total_content from netflix_data group by type order by total_content desc
+
+Q5 Percentage Share of Movies and TV Shows...
+
+	select type,count(*) as total_content,ROUND(count(*)* 100.0 / (select count(*) from netflix_data), 2) as Percentage_share from netflix_data group by type;
+
+
+Q6 Which countries produce the most Netflix content?
+	
+	select country , count(*) as total_content from netflix_data WHERE country
+<> 'Unknown' group by country order by total_content desc limit 10;
+
+Q7 Which genres dominate Netflix?
+	
+	SELECT listed_in as genre, count(*) as total_content
+from netflix_data group by listed_in order by total_content desc limit 10;
+  
+Q8 Content released by year
+
+	SELECT release_year, count(*) as total_content from netflix_data group by release_year order by release_year;
+
+
+Q9 Latest 10 years content trend
+
+	select release_year,count(*) as total_content from netflix_data where release_year>=year(curdate())-10 group by release_year order by release_year;
+	
+
+Q10 Which year had the highest number of releases?
+
+	select release_year , count(*) as total_content from netflix_data group by release_year order by total_content desc limit 1;
+
+
+Q11 Average Movie Duration
+	
+	select round(avg(duration_number),2) as avg_movie_duration from netflix_data where 
+type="Movie";
+	
+
+Q12 Longest Movie Duration on Netfix
+
+	select title,country,release_year,duration_number from netflix_data where type = "Movie" order by duration_number desc limit 10;
+	
+
+Q13 Shortesh Movie Duration on Netflix
+
+	select title,country,release_year,duration_number from netflix_data where type="Movie" order by duration_number asc limit 10;
+
+Q14 TV shows with highest seasons
+	
+	select title,country,release_year,duration_number as Seasons from netflix_data where type="TV Show" order by Seasons desc limit 10;
+
+Q15 Indian Specific Content 
+	
+	select type,count(*) as total_content from netflix_data where country = "India" group by type;
+
+Q16 Top Directors 
+	select director,count(*) as total_content from netflix_data where director<>"Unknown" group by director
+order by total_content desc limit 10
+
+Q17 Rating distribution by content type
+
+	select type,rating, count(*) as total_content from netflix_data group by type,rating order by type,total_content desc;
+
+Q21 Mature Content World Wide on Netflix
+
+	select type,count(*) as mature_content from netflix_data where rating in('TV-MA','R','NC-17') group by type;
+
+Q22 Best Content category for investment
+
+	select listed_in , count(*) as total_content from netflix_data group by listed_in order by total_content desc limit 5;
+
+Q23 Countries With Strong movie Production
+			select country, COUNT(*) AS total_movies from netflix_data where type = 'Movie' AND country <> 'Unknown' group by country order by total_movies desc limit 10;
+			
+Q24 Countries with strong TV show production
+
+	select country, COUNT(*) AS total_tv_shows from netflix_data where type = 'TV Show' AND country <> 'Unknown'
+group by country order by total_tv_shows desc
